@@ -1,12 +1,17 @@
 package Arivan.CheckStand;
 
-import java.util.Scanner;
-import java.util.TreeMap;
+
+import java.util.*;
 
 public class Test {
     public static void main(String[] args) {
         Client.run();
-//        GoodsManage.goods.clear();
+
+        StringBuilder stringBuilder = new StringBuilder("abfdfsf");
+        while (stringBuilder.length() < 10) {
+            stringBuilder.append(1);
+        }
+        System.out.println(stringBuilder);
 
 //        Scanner scanner = new Scanner(System.in);
 //        String s = scanner.nextLine();
@@ -101,21 +106,53 @@ class GoodsManage {
         Surface.setMenu();
         switch (scanner.nextLine()) {
             case "S":
-                view();
-                while (!scanner.nextLine().equals("R")) {
-                    System.out.println("指令输入错误！请重新输入！");
+                while (true) {
+                    view();
+                    String input = scanner.nextLine();
+                    if (input.equals("R")) {
+                        set();
+                        break;
+                    }
+                    System.out.println("输入指令错误，请重新输入！");
                 }
                 break;
             case "A":
-                put();
-                view();
-                while (!scanner.nextLine().equals("R")) {
-                    System.out.println("指令输入错误！请重新输入！");
+                while (true) {
+                    System.out.println("请输入上架商品信息（如下格式：1 餐巾纸 1.4）:");
+                    put();
+                    view();
+                    System.out.println("继续上架，请输入任意指令，返回上一层，请输入(R)");
+                    String input = scanner.nextLine();
+                    if (input.equals("R")) {
+                        set();
+                        break;
+                    }
                 }
                 break;
             case "D":
+                while (true) {
+                    downGoods();
+                    view();
+                    System.out.println("继续下架，请输入任意指令，返回上一层，请输入(R)");
+                    String input = scanner.nextLine();
+                    if (input.equals("R")) {
+                        set();
+                        break;
+                    }
+                }
                 break;
             case "U":
+                while (true) {
+                    System.out.println("请输入修改商品信息（如下格式：1 餐巾纸 1.4 ）:");
+                    modifyGoods();
+                    view();
+                    System.out.println("继续修改，请输入任意指令，返回上一层，请输入(R)");
+                    String input = scanner.nextLine();
+                    if (input.equals("R")) {
+                        set();
+                        break;
+                    }
+                }
                 break;
             case "R":
                 break;
@@ -133,15 +170,22 @@ class GoodsManage {
         if (goods.isEmpty()) {
             System.out.println("             尚未上架商品，当前商品清单为空！");
         } else {
-            System.out.println("       编号       产品名称       单价");
-            for (int i = 0; i < goods.size(); i++) {
+            Iterator<Integer> iterator = goods.keySet().iterator();
+            System.out.println("       编号       产品名称          单价(元)");
+            while (iterator.hasNext()) {
                 System.out.print("       ");
-
+                int keyValue = iterator.next();
+                System.out.print(keyValue);
+                System.out.print("         ");
+                String[] arr = goods.get(keyValue);
+                StringBuilder str = new StringBuilder(arr[0]);
+                while (str.length() < 10) {
+                    str.append(" ");
+                }
+                System.out.print(str);
                 System.out.print("       ");
-                System.out.print("       ");
-
+                System.out.println(arr[1]);
             }
-            //System.out.println("商品清单！！！！！");
         }
         System.out.println();
         System.out.println("                                       [R] 返回  ");
@@ -152,10 +196,13 @@ class GoodsManage {
      * 货物上架
      */
     public static void put() {
+        System.out.println("放弃操作，请输入R");
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            System.out.println("请输入上架商品信息（如下格式：1 餐巾纸 1.4）:");
             String enter = scanner.nextLine();
+            if (enter.equals("R")) {
+                break;
+            }
             String[] arr = enter.trim().split(" ");
             if (arr.length != 3) {
                 System.out.println("输入有误，参数个数不等于3！");
@@ -170,7 +217,30 @@ class GoodsManage {
                 break;
             }
         }
-//        System.out.println("输出完成");
+    }
+
+    /**
+     * 下架商品
+     */
+    public static void downGoods() {
+        System.out.println("请输入下架商品信息编号（如下格式：1 ）:");
+        Scanner scanner = new Scanner(System.in);
+        String input = null;
+        while (true) {
+            input = scanner.nextLine();
+            if (isAllDigit(input)) {
+                break;
+            }
+            System.out.println("输入的参数不为纯数字，请重新输入！");
+        }
+        goods.remove(Integer.parseInt(input));
+    }
+
+    /**
+     * 修改商品信息
+     */
+    public static void modifyGoods() {
+        put();
     }
 
     /**
@@ -187,6 +257,11 @@ class GoodsManage {
         return true;
     }
 
+    /**
+     * 判断字符串是否是带有小数点的数字
+     * @param str 需要判断的字符串
+     * @return 是，返回true，否则返回false
+     */
     private static boolean isAllLongDigit(String str) {
         if (!str.contains(".")) {
             return false;
