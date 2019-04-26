@@ -1,43 +1,18 @@
 package Arivan.CheckStand;
 
-
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class Test {
+public class TestCheckStand {
     public static void main(String[] args) {
         Client.run();
-
-//        SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//        System.out.println(format.format(new Date()));
-
-//        String s = "0.5";
-//        String m = "0.5.6";
-//        System.out.println(GoodsManage.isAllLongDigit(s));
-//        System.out.println(GoodsManage.isAllLongDigit(m));
-//        System.out.println(GoodsManage.isAllDigit(s));
-
-//        StringBuilder stringBuilder = new StringBuilder("abfdfsf");
-//        while (stringBuilder.length() < 10) {
-//            stringBuilder.append(1);
-//        }
-//        System.out.println(stringBuilder);
-
-//        Scanner scanner = new Scanner(System.in);
-//        String s = scanner.nextLine();
-//        String[] arr = s.trim().split(" ");
-//        for (String s1 : arr) {
-//            System.out.println(s1);
-//        }
-//
-//        System.out.println(arr.length);
-//        String a = "abc.dsf";
-//        System.out.println(a);
-//        a.replaceAll("\\.","");
-//        System.out.println(a);
     }
 }
 
+/**
+ * 界面
+ */
 class Surface {
     public static void mainMenu() {
         System.out.println();
@@ -306,17 +281,24 @@ class GoodsManage {
  */
 class OrderManage {
     private static Integer T = 1;
+
+    /**
+     * 终于存放订单信息
+     */
     public static final TreeMap<Integer,String[]> orders =
             new TreeMap<>();
+
+    /**
+     * 买单功能主菜单
+     */
     public static void buyMenu() {
-//        GoodsManage.view();
-        System.out.println("******************* 买单功能 ********************");
-        System.out.println("    [S] 查看 [A] 下单 [D] 取消 [L] 浏览 [R] 返回");
-        System.out.println("       输入:  S A D L R 进入操作");
-        System.out.println("************************************************");
         Scanner scanner = new Scanner(System.in);
         String input;
         while (true) {
+            System.out.println("******************* 买单功能 ********************");
+            System.out.println("    [S] 查看 [A] 下单 [D] 取消 [L] 浏览 [R] 返回");
+            System.out.println("       输入:  S A D L R 进入操作");
+            System.out.println("************************************************");
             input = scanner.nextLine();
             if (input.equals("R")) {
                 break;
@@ -331,18 +313,32 @@ class OrderManage {
                                 break;
                             }
                         }
-                        buyMenu();
                         break;
                     case "A":
                         if (GoodsManage.goods.isEmpty()) {
                             System.out.println("当前货物为空！！！");
                         }else {
-                            buy();
+                            while (true) {
+                                buy();
+                                System.out.println("停止下单，请输入R");
+                                if (scanner.nextLine().equals("R")) {
+                                    break;
+                                }
+                            }
                         }
-                        buyMenu();
                         break;
                     case "D":
-                        System.out.println("取消订单");
+                        if (orders.isEmpty()) {
+                            System.out.println("取消失败，当前订单为空！！！");
+                        } else {
+                            while (true) {
+                                cancel();
+                                System.out.println("返回上一层，请输入R");
+                                if (scanner.nextLine().equals("R")) {
+                                    break;
+                                }
+                            }
+                        }
                         break;
                     case "L":
                         browse();
@@ -352,15 +348,14 @@ class OrderManage {
                                 break;
                             }
                         }
-                        buyMenu();
                         break;
                     default:
+                        System.out.println("返回上一层，请输入R");
                             break;
                 }
             }else {
                 System.out.println("指令输入错误，请重新输入");
             }
-
         }
     }
 
@@ -368,10 +363,10 @@ class OrderManage {
      * 下单
      */
     public static void buy() {
-        System.out.println("请输入下单信息[编号 数量]（如下格式：1  2 ）:");
-        System.out.println("放弃操作，请输入R");
         Scanner scanner = new Scanner(System.in);
         while (true) {
+            System.out.println("请输入下单信息[编号 数量]（如下格式：1  2 ）:");
+            System.out.println("放弃操作，请输入R");
             String intput = scanner.nextLine();
             if (intput.equals("R")) {
                 break;
@@ -398,26 +393,41 @@ class OrderManage {
      * 查看订单信息
      */
     public static void orderView() {
-        Date date = new Date();
         System.out.println("===============================");
         System.out.println("编号："+T++);
         SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         System.out.println("打印时间："+format.format(new Date()));
         System.out.println("===============================");
         System.out.println("编号     名称      数量     单价");
+        if (!orders.isEmpty()) {
+            Iterator<Integer> iterator = orders.keySet().iterator();
+            while (iterator.hasNext()) {
+                int id = iterator.next();
+                String[] value = orders.get(id);
+                System.out.print(id);
+                System.out.print("        "+value[0]);
+                System.out.print("      "+value[1]);
+                System.out.println("       "+value[2]);
+            }
+        }
         System.out.println("===============================");
         System.out.println("总价："+ ordersSum());
         System.out.println("===============================");
     }
 
-    private static double ordersSum() {
+    /**
+     *  求订单总价
+     * @return 返回总价
+     */
+    public static double ordersSum() {
         Iterator<Integer> iterator = orders.keySet().iterator();
-        double sum = 0;
+        double sum = 0.0;
         while (iterator.hasNext()) {
             String[] value = orders.get(iterator.next());
-            sum += (Integer.parseInt(value[1])*Integer.parseInt(value[2]));
+            sum += (Integer.parseInt(value[1])*(Double.parseDouble(value[2])));
         }
-        return sum;
+        DecimalFormat res = new DecimalFormat("#.00");
+        return Double.parseDouble(res.format(sum));
     }
 
     /**
@@ -431,6 +441,30 @@ class OrderManage {
      * 取消
      */
     public static void cancel() {
-
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.println("请输入取消信息[编号 数量]（如下格式：1  2 ）:");
+            System.out.println("返回上一层，请输入R");
+            String[] arr = scanner.nextLine().trim().split(" ");
+            if (arr[0].equals("R")) {
+                break;
+            }
+            int id = Integer.parseInt(arr[0]);
+            int count = Integer.parseInt(arr[1]);
+            if (GoodsManage.isAllDigit(String.valueOf(id)) &&
+                    GoodsManage.isAllDigit(String.valueOf(count))) {
+                String[] value = orders.get(id);
+                int realcount = Integer.parseInt(value[1]);
+                if (realcount <= count || count < 0) {
+                    orders.remove(id);
+                }else {
+                    value[1] = String.valueOf(realcount-count);
+                    orders.put(id,value);
+                }
+            } else {
+                System.out.println("只能输入整数!!!");
+            }
+            orderView();
+        }
     }
 }
