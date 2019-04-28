@@ -18,7 +18,7 @@ class Surface {
         System.out.println();
         System.out.println("*************** 欢迎使简易收银台 *****************");
         System.out.println("       [U] 使用 [S] 设置 [A] 关于 [Q] 退出");
-        System.out.println("          输入:  S A D U R 进行操作");
+        System.out.println("           输入:  S A D U R 进行操作");
         System.out.println("************************************************");
         System.out.println();
     }
@@ -36,7 +36,7 @@ class Surface {
         System.out.println("        名称：简易收银台");
         System.out.println("        功能：基于字符界面的收银台操作系统");
         System.out.println("        作者: Arivan");
-        System.out.println("        版本: v0.0.1");
+        System.out.println("        版本: v0.0.2");
         System.out.println("        意见反馈：1194028288@qq.com");
         System.out.println();
         System.out.println("                                       [R] 返回  ");
@@ -95,62 +95,70 @@ class GoodsManage {
 
     public static void set() {
         Scanner scanner = new Scanner(System.in);
-        Surface.setMenu();
-        switch (scanner.nextLine()) {
-            case "S":
-                while (true) {
-                    view();
-                    String input = scanner.nextLine();
-                    if (input.equals("R")) {
-                        set();
-                        break;
+        while (true) {
+            Surface.setMenu();
+            String value = scanner.nextLine();
+            if (value.equals("R")) {
+                break;
+            }
+            switch (value) {
+                case "S":
+                    while (true) {
+                        view();
+                        String input = scanner.nextLine();
+                        if (input.equals("R")) {
+                            break;
+                        }
+                        System.out.println("输入指令错误，请重新输入！");
                     }
-                    System.out.println("输入指令错误，请重新输入！");
-                }
-                break;
-            case "A":
-                while (true) {
-                    System.out.println("请输入上架商品信息（如下格式：1 餐巾纸 1.4）:");
-                    put();
-                    view();
-                    System.out.println("继续上架，请输入任意指令，返回上一层，请输入(R)");
-                    String input = scanner.nextLine();
-                    if (input.equals("R")) {
-                        set();
-                        break;
+                    break;
+                case "A":
+                    while (true) {
+                        System.out.println("请输入上架商品信息（如下格式：1 餐巾纸 1.4）:");
+                        put();
+                        view();
+                        System.out.println("继续上架，请输入任意指令，返回上一层，请输入(R)");
+                        String input = scanner.nextLine();
+                        if (input.equals("R")) {
+                            break;
+                        }
                     }
-                }
-                break;
-            case "D":
-                while (true) {
-                    downGoods();
-                    view();
-                    System.out.println("继续下架，请输入任意指令，返回上一层，请输入(R)");
-                    String input = scanner.nextLine();
-                    if (input.equals("R")) {
-                        set();
-                        break;
+                    break;
+                case "D":
+                    while (true) {
+                        if (goods.isEmpty()) {
+                            System.out.println("尚未上架商品，下架失败！！！");
+                            break;
+                        }
+                        downGoods();
+                        view();
+                        System.out.println("继续下架，请输入任意指令，返回上一层，请输入(R)");
+                        String input = scanner.nextLine();
+                        if (input.equals("R")) {
+                            break;
+                        }
                     }
-                }
-                break;
-            case "U":
-                while (true) {
-                    System.out.println("请输入修改商品信息（如下格式：1 餐巾纸 1.4 ）:");
-                    modifyGoods();
-                    view();
-                    System.out.println("继续修改，请输入任意指令，返回上一层，请输入(R)");
-                    String input = scanner.nextLine();
-                    if (input.equals("R")) {
-                        set();
-                        break;
+                    break;
+                case "U":
+                    while (true) {
+                        if (goods.isEmpty()) {
+                            System.out.println("尚未上架商品，修改失败！！！");
+                            break;
+                        }
+                        System.out.println("请输入修改商品信息（如下格式：1 餐巾纸 1.4 ）:");
+                        modifyGoods();
+                        view();
+                        System.out.println("继续修改，请输入任意指令，返回上一层，请输入(R)");
+                        String input = scanner.nextLine();
+                        if (input.equals("R")) {
+                            break;
+                        }
                     }
-                }
-                break;
-            case "R":
-                break;
-            default:
-                System.out.println("指令输入错误！请重新输入！");
-                break;
+                    break;
+                default:
+                    System.out.println("指令输入错误！请重新输入！");
+                    break;
+            }
         }
     }
 
@@ -303,7 +311,7 @@ class OrderManage {
             if (input.equals("R")) {
                 break;
             }else if (input.equals("S") || input.equals("A") || input.equals("D")
-            || input.equals("L")) {
+                    || input.equals("L")) {
                 switch (input) {
                     case "S":
                         orderView();
@@ -351,7 +359,7 @@ class OrderManage {
                         break;
                     default:
                         System.out.println("返回上一层，请输入R");
-                            break;
+                        break;
                 }
             }else {
                 System.out.println("指令输入错误，请重新输入");
