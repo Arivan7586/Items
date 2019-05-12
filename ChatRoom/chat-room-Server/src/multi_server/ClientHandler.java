@@ -43,7 +43,7 @@ public class ClientHandler implements Runnable {
                     register(clientName);
                 } else if (value.length == 2 && value[0].equals("group")) {
                     //群聊
-                    groupChat(clientName,value[1]);
+                    groupChat(clientName, value[1]);
                 } else if (value.length == 3 && value[0].equals("private")) {
                     //私聊
                     String name = value[1];
@@ -52,6 +52,8 @@ public class ClientHandler implements Runnable {
                     //退出
                     quit();
                     break;
+                } else {
+                    sendMessage(this.socket,"输入格式错误！！！");
                 }
             }
         } catch (IOException e) {
@@ -68,15 +70,16 @@ public class ClientHandler implements Runnable {
         Iterator<Socket> iterator = CLIENT_MAP.values().iterator();
         while (iterator.hasNext()) {
             Socket socket = iterator.next();
-            sendMessage(socket,clientName+"已下线！！！");
+            sendMessage(socket, clientName + "已下线！！！");
         }
         clientCount();
     }
 
     /**
      * 给指定的客户端发消息（私聊）
+     *
      * @param name 目标客户端
-     * @param s 消息内容
+     * @param s    消息内容
      */
     private void privateChat(String name, String s) {
         Socket socket = CLIENT_MAP.get(name);
@@ -85,8 +88,9 @@ public class ClientHandler implements Runnable {
 
     /**
      * 给除了发消息的客户端以外，所有的客户端发消息（群聊）
+     *
      * @param sender 消息的发送者
-     * @param s 消息内容
+     * @param s      消息内容
      */
     private void groupChat(String sender, String s) {
         Iterator<Map.Entry<String, Socket>> iterator = CLIENT_MAP.entrySet().iterator();
@@ -102,18 +106,24 @@ public class ClientHandler implements Runnable {
 
     /**
      * 注册聊天室
+     *
      * @param name 用户名
      */
     private void register(String name) {
         //注册聊天室
-        CLIENT_MAP.put(name, this.socket);
-        sendMessage(this.socket, "恭喜<" + name + ">注册成功");
-        clientCount();
+        if (CLIENT_MAP.containsKey(name)) {
+            sendMessage(this.socket,"注册失败（该用户名已存在）");
+        } else {
+            CLIENT_MAP.put(name, this.socket);
+            sendMessage(this.socket, "恭喜<" + name + ">注册成功");
+            clientCount();
+        }
     }
 
     /**
      * 给指定的客户端发送信息
-     * @param socket 目标客户端
+     *
+     * @param socket  目标客户端
      * @param message 消息内容
      */
     private void sendMessage(Socket socket, String message) {
@@ -134,9 +144,12 @@ public class ClientHandler implements Runnable {
         Set<String> set = CLIENT_MAP.keySet();
         if (!set.isEmpty()) {
             System.out.println("聊天室当前在线" + set.size() + "人，用户如下：");
+            System.out.print("(");
             for (String s : set) {
-                System.out.println(s);
+                System.out.print(s + " ");
             }
+            System.out.print(")");
         }
+        System.out.println();
     }
 }

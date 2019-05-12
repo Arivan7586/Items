@@ -20,7 +20,7 @@ public class ReadDataFromSeverThread extends Thread{
     public void run() {
         while (true) {
             try {
-                if (this.client.isClosed()) {
+                if (this.client.isInputShutdown()) {
                     break;
                 }
                 InputStream in = this.client.getInputStream();
