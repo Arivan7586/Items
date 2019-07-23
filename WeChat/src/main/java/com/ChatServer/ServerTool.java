@@ -26,13 +26,24 @@ public class ServerTool implements Runnable {
         this.clientMessage = new File(path);
     }
 
+    public void run() {
+
+        try {
+            chat();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     /**
      * 聊天流程
+     *
      * @throws IOException
      */
     private void chat() throws IOException {
         //接收客户端发送来的数据
-        InputStream in = socket.getInputStream();
+        InputStream in = this.socket.getInputStream();
         Scanner scanner = new Scanner(in);
 
         while (true) {
@@ -63,39 +74,28 @@ public class ServerTool implements Runnable {
             } else if (value[0].equals("sendFile")) {
                 //发送文件
                 String name = value[1];
-                sendFile(name,message);
+                sendFile(name, message);
             } else if (message.startsWith("Yes")) {
+                //传文件
                 String name = value[1];
-                privateChat(name,"sendNow");
-            }
-            else {
-                sendMessage(this.socket,"输入格式错误！！！");
+                privateChat(name, "sendNow");
+            } else {
+                sendMessage(this.socket, "输入格式错误！！！");
             }
         }
     }
 
-    public void run() {
-
-        try {
-            chat();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    /**
-     *
+    /** 传输文件
      * @param name 文件接收者
      */
-    private void sendFile(String name,String message) {
+    private void sendFile(String name, String message) {
         if (!CLIENT_MAP.containsValue(this.socket)) {
-            sendMessage(this.socket,"请先登陆(login:用户名)！！！");
+            sendMessage(this.socket, "请先登陆(login:用户名)！！！");
         } else {
             if (CLIENT_MAP.containsKey(name)) {
                 Socket socket = CLIENT_MAP.get(name);
                 String[] str = message.trim().split(":");
-                String fileName = str[str.length-1];
+                String fileName = str[str.length - 1];
                 sendMessage(socket, clientName + "想给您发送文件，接收，请输入Yes:用户名，否则输入No:用户名");
             } else {
                 Properties properties = new Properties();
@@ -105,9 +105,9 @@ public class ServerTool implements Runnable {
                     e.printStackTrace();
                 }
                 if (properties.containsKey(name)) {
-                    sendMessage(this.socket,"该用户不在线");
+                    sendMessage(this.socket, "该用户不在线");
                 } else {
-                    sendMessage(this.socket,"该用户不存在");
+                    sendMessage(this.socket, "该用户不存在");
                 }
             }
         }
@@ -121,9 +121,9 @@ public class ServerTool implements Runnable {
         try {
             properties.load(new FileInputStream(this.clientMessage));
             properties.remove(clientName);
-            properties.store(new FileOutputStream(this.clientMessage),"删除账户信息");
+            properties.store(new FileOutputStream(this.clientMessage), "删除账户信息");
             quit();
-            sendMessage(this.socket,"用户<"+clientName+">已被成功注销");
+            sendMessage(this.socket, "用户<" + clientName + ">已被成功注销");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -131,6 +131,7 @@ public class ServerTool implements Runnable {
 
     /**
      * 登陆
+     *
      * @param name 待登陆的用户名
      */
     private void login(String name) {
@@ -138,11 +139,11 @@ public class ServerTool implements Runnable {
         try {
             properties.load(new FileInputStream(this.clientMessage));
             if (beUsed(name)) {
-                CLIENT_MAP.put(name,this.socket);
-                sendMessage(this.socket,"登陆成功");
+                CLIENT_MAP.put(name, this.socket);
+                sendMessage(this.socket, "登陆成功");
                 clientCount();
             } else {
-                sendMessage(this.socket,"当前账号不存在，请核对或注册！！！");
+                sendMessage(this.socket, "当前账号不存在，请核对或注册！！！");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -180,9 +181,9 @@ public class ServerTool implements Runnable {
                 e.printStackTrace();
             }
             if (properties.containsKey(name)) {
-                sendMessage(this.socket,"该用户不在线");
+                sendMessage(this.socket, "该用户不在线");
             } else {
-                sendMessage(this.socket,"该用户不存在");
+                sendMessage(this.socket, "该用户不存在");
             }
         }
 
@@ -196,7 +197,7 @@ public class ServerTool implements Runnable {
      */
     private void groupChat(String sender, String s) {
         if (!CLIENT_MAP.containsValue(this.socket)) {
-            sendMessage(this.socket,"请先登陆(login:用户名)！！！");
+            sendMessage(this.socket, "请先登陆(login:用户名)！！！");
         } else {
             Iterator<Map.Entry<String, Socket>> iterator = CLIENT_MAP.entrySet().iterator();
             while (iterator.hasNext()) {
@@ -204,7 +205,7 @@ public class ServerTool implements Runnable {
                 String name = entry.getKey();
                 Socket socket = entry.getValue();
                 if (name != sender) {
-                    sendMessage(socket, sender + "说> " + s);
+                    sendMessage(socket,  sender + "说：" + s);
                 }
             }
         }
@@ -218,13 +219,13 @@ public class ServerTool implements Runnable {
     private void register(String name) {
         //注册聊天室
         if (beUsed(name)) {
-            sendMessage(this.socket,"注册失败（该用户名已存在）");
+            sendMessage(this.socket, "注册失败（该用户名已存在）");
         } else {
             Properties properties = new Properties();
             try {
                 properties.load(new FileInputStream(this.clientMessage));
                 properties.setProperty(name, String.valueOf(this.socket));
-                properties.store(new FileOutputStream(this.clientMessage),"注册新用户");
+                properties.store(new FileOutputStream(this.clientMessage), "注册新用户");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -269,6 +270,7 @@ public class ServerTool implements Runnable {
 
     /**
      * 判断当前用户名是否已经存在
+     *
      * @param name 被判断的用户名
      * @return 存在返回true，否则返回false
      */
