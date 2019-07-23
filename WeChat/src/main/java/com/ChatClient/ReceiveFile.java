@@ -4,6 +4,9 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * 负责接收文件
+ */
 public class ReceiveFile extends Thread {
 
     //目标文件夹
@@ -44,6 +47,8 @@ public class ReceiveFile extends Thread {
                 System.out.println("接收完成");
                 in.close();
                 out.close();
+
+                //文件传输完成，关闭serverSocket
                 serverSocket.close();
                 break;
             } catch (IOException e) {
