@@ -16,8 +16,6 @@ public class SendData implements Runnable {
     //当前客户端
     private final Socket client;
 
-    private String receiveName;
-
 
     public SendData(Socket socket) {
         this.client = socket;
@@ -34,8 +32,6 @@ public class SendData implements Runnable {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                System.out.println();
-                System.out.println("注册（logon:用户名）、登陆（login:用户名）、退出（quit）、注销（logoff）、发送文件(sendFile:接收者)、私聊(private:接收者昵称:消息内容)、群聊（group:消息内容）");
                 System.out.println("请输入> ");
                 Scanner in = new Scanner(System.in);
                 String message = in.nextLine();
