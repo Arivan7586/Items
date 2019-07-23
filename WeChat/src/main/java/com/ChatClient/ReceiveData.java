@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.util.Date;
 import java.util.Scanner;
 
 /**
@@ -21,7 +22,7 @@ public class ReceiveData implements Runnable {
     public void run() {
         //客户端不关闭，此工具类一直运行
         while (true) {
-            if (this.client.isInputShutdown()) {
+            if (this.client.isClosed()) {
                 break;
             }
             try {
@@ -33,6 +34,7 @@ public class ReceiveData implements Runnable {
                     send();
                 } else {
                     System.out.println("收到消息>" + message);
+                    System.out.println();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -44,7 +46,7 @@ public class ReceiveData implements Runnable {
         while (true) {
             System.out.println("请输入要发送的文件路径,放弃发送请输入exit：");
             Scanner in = new Scanner(System.in);
-            String path = in.next();
+            String path = in.nextLine();
             if (path.equals("exit")) {
                 break;
             }
