@@ -1,5 +1,7 @@
 package com.ChatServer;
 
+import com.connectToDatabase.DatabaseTool;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.*;
@@ -117,27 +119,27 @@ public class ServerTool implements Runnable {
      * 注销当前用户
      */
     private void logout() {
-        Properties properties = new Properties();
-        try {
-            properties.load(new FileInputStream(this.clientMessage));
-            properties.remove(clientName);
-            properties.store(new FileOutputStream(this.clientMessage), "删除账户信息");
+//        Properties properties = new Properties();
+//        try {
+//            properties.load(new FileInputStream(this.clientMessage));
+//            properties.remove(clientName);
+//            properties.store(new FileOutputStream(this.clientMessage), "删除账户信息");
+        DatabaseTool.deleteUser(clientName);
             quit();
             sendMessage(this.socket, "用户<" + clientName + ">已被成功注销");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     /**
      * 登陆
-     *
-     * @param name 待登陆的用户名
+     * @param name 登陆用户的用户名
      */
     private void login(String name) {
-        Properties properties = new Properties();
-        try {
-            properties.load(new FileInputStream(this.clientMessage));
+//        Properties properties = new Properties();
+//        try {
+//            properties.load(new FileInputStream(this.clientMessage));
             if (beUsed(name)) {
                 CLIENT_MAP.put(name, this.socket);
                 sendMessage(this.socket, "登陆成功");
@@ -145,9 +147,9 @@ public class ServerTool implements Runnable {
             } else {
                 sendMessage(this.socket, "当前账号不存在，请核对或注册！！！");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     /**
@@ -221,14 +223,17 @@ public class ServerTool implements Runnable {
         if (beUsed(name)) {
             sendMessage(this.socket, "注册失败（该用户名已存在）");
         } else {
-            Properties properties = new Properties();
-            try {
-                properties.load(new FileInputStream(this.clientMessage));
-                properties.setProperty(name, String.valueOf(this.socket));
-                properties.store(new FileOutputStream(this.clientMessage), "注册新用户");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
+            DatabaseTool.addUser(name);
+
+//            Properties properties = new Properties();
+//            try {
+//                properties.load(new FileInputStream(this.clientMessage));
+//                properties.setProperty(name, String.valueOf(this.socket));
+//                properties.store(new FileOutputStream(this.clientMessage), "注册新用户");
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
             CLIENT_MAP.put(name, this.socket);
             sendMessage(this.socket, "恭喜<" + name + ">注册成功");
             clientCount();
@@ -275,12 +280,14 @@ public class ServerTool implements Runnable {
      * @return 存在返回true，否则返回false
      */
     private boolean beUsed(String name) {
-        Properties properties = new Properties();
-        try {
-            properties.load(new FileInputStream(this.clientMessage));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return properties.containsKey(name);
+        return DatabaseTool.selectUser(name);
+
+//        Properties properties = new Properties();
+//        try {
+//            properties.load(new FileInputStream(this.clientMessage));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return properties.containsKey(name);
     }
 }
