@@ -12,12 +12,10 @@ import java.nio.charset.StandardCharsets;
 @WebListener
 public class FreeMakerListener implements ServletContextListener {
     public static final String TEMPLATE_KEY = "_template_";
-
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         //配置版本
         Configuration configuration = new Configuration(Configuration.VERSION_2_3_0);
-
         // 配置加载ftl的路径
         try {
             configuration.setDirectoryForTemplateLoading(
@@ -26,7 +24,6 @@ public class FreeMakerListener implements ServletContextListener {
             System.err.println("配置ftl的加载路径失败");
             e.printStackTrace();
         }
-
         configuration.setDefaultEncoding(StandardCharsets.UTF_8.displayName());
         servletContextEvent.getServletContext().setAttribute(TEMPLATE_KEY,configuration);
     }
