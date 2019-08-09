@@ -27,7 +27,7 @@ public class ChatService {
             new CopyOnWriteArraySet<>();
 
     //用于缓存所有用户的列表
-    private static Map<String,String> userNames =
+    public static Map<String,String> userNames =
             new ConcurrentHashMap<>();
 
     //绑定当前webSocket会话

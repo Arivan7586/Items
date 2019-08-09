@@ -39,7 +39,9 @@ public class LoginController extends HttpServlet {
             write(out,"\"用户名或密码为空!\"");
         } else {
             //用户名与密码格式合法，执行登录流程
-            if (accountService.userLogin(userName,password)) {
+            if (accountService.checkIsOnline(userName)) {
+                write(out,"\"该用户已登录!\"");
+            } else if (accountService.userLogin(userName,password)) {
                 //登录成功,跳转到聊天页面
                 //加载chat.ftl
                 Template template = getTemplate(request,"/chat.ftl");

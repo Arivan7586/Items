@@ -28,7 +28,9 @@ public class RegisterController extends HttpServlet {
        PrintWriter writer = response.getWriter();
 
        String res = "";
-       if (accountService.userRegister(userName,password)) {
+       if (accountService.userNameIsExist(userName,password)) {
+           res = "\"该用户名已存在\"";
+       } else if (accountService.userRegister(userName,password)) {
            //新用户注册成功
            res = "\"注册成功\"";
        } else {
@@ -37,7 +39,6 @@ public class RegisterController extends HttpServlet {
        }
 
         writer.println("<script>\n" +
-//                "    alert(\"注册成功\");\n" +
                 "    alert(" + res + ");\n" +
                 "    window.location.href = \"/index.html\";\n" +
                 "</script>");
